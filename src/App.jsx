@@ -502,6 +502,7 @@ function BookingForm() {
       const templateParams = {
         from_name: form.name,
         from_email: form.email,
+        reply_to: form.email,
         phone: form.phone || "Not provided",
         event_date: formattedDate,
         event_type: form.eventType || "Not specified",
