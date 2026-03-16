@@ -96,7 +96,7 @@ function Nav({ activeSection }) {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const links = ["Services", "Packages", "Gallery", "Blog", "FAQ", "Book"];
+  const links = ["Services", "Packages", "Gallery", "FAQ", "Blog", "Book"];
   return (
     <nav style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
@@ -114,12 +114,9 @@ function Nav({ activeSection }) {
         {/* Desktop */}
         <div style={{ display: "flex", alignItems: "center", gap: 28 }} className="nav-desktop">
           {links.map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} style={{
-              color: activeSection === l.toLowerCase() ? "#DAA520" : "#ccc",
-              textDecoration: "none", fontSize: 13, fontFamily: "'Space Mono', monospace",
-              letterSpacing: 1.5, textTransform: "uppercase",
-              transition: "color 0.2s",
-            }}>{l}</a>
+            l === "Blog"
+              ? <Link key={l} to="/blog" style={{ color: "#ccc", textDecoration: "none", fontSize: 13, fontFamily: "'Space Mono', monospace", letterSpacing: 1.5, textTransform: "uppercase", transition: "color 0.2s" }}>{l}</Link>
+              : <a key={l} href={`#${l.toLowerCase()}`} style={{ color: activeSection === l.toLowerCase() ? "#DAA520" : "#ccc", textDecoration: "none", fontSize: 13, fontFamily: "'Space Mono', monospace", letterSpacing: 1.5, textTransform: "uppercase", transition: "color 0.2s" }}>{l}</a>
           ))}
         </div>
         {/* Mobile toggle */}
@@ -130,10 +127,9 @@ function Nav({ activeSection }) {
       {open && (
         <div style={{ padding: "16px 0 24px", display: "flex", flexDirection: "column", gap: 16 }} className="nav-mobile">
           {links.map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)} style={{
-              color: "#ccc", textDecoration: "none", fontSize: 15, fontFamily: "'Space Mono', monospace",
-              letterSpacing: 1.5, textTransform: "uppercase", padding: "4px 0",
-            }}>{l}</a>
+            l === "Blog"
+              ? <Link key={l} to="/blog" onClick={() => setOpen(false)} style={{ color: "#ccc", textDecoration: "none", fontSize: 15, fontFamily: "'Space Mono', monospace", letterSpacing: 1.5, textTransform: "uppercase", padding: "4px 0" }}>{l}</Link>
+              : <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)} style={{ color: "#ccc", textDecoration: "none", fontSize: 15, fontFamily: "'Space Mono', monospace", letterSpacing: 1.5, textTransform: "uppercase", padding: "4px 0" }}>{l}</a>
           ))}
         </div>
       )}
@@ -383,11 +379,12 @@ function Blog() {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
           {published.map((post) => (
-            <Link to={`/blog/${post.slug}`} key={post.id} style={{ textDecoration: "none" }}>
+            <Link to={`/blog/${post.slug}`} key={post.id} style={{ textDecoration: "none", display: "block", cursor: "pointer" }}>
               <article style={{
                 padding: 28, background: "rgba(255,255,255,0.02)",
                 border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4,
                 display: "flex", flexDirection: "column", height: "100%",
+                cursor: "pointer",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                   <span style={{
@@ -577,11 +574,10 @@ function Footer() {
           </div>
           <div>
             <h4 style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#DAA520", letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>Quick Links</h4>
-            {["Services", "Packages", "Gallery", "Blog", "FAQ", "Book"].map(l => (
-              <a key={l} href={`#${l.toLowerCase()}`} style={{
-                display: "block", fontFamily: "'Space Mono', monospace", fontSize: 12,
-                color: "#666", textDecoration: "none", marginBottom: 8,
-              }}>{l}</a>
+            {["Services", "Packages", "Gallery", "FAQ", "Blog", "Book"].map(l => (
+              l === "Blog"
+                ? <Link key={l} to="/blog" style={{ display: "block", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#666", textDecoration: "none", marginBottom: 8 }}>{l}</Link>
+                : <a key={l} href={`#${l.toLowerCase()}`} style={{ display: "block", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#666", textDecoration: "none", marginBottom: 8 }}>{l}</a>
             ))}
           </div>
           <div>
@@ -662,8 +658,8 @@ function HomePage() {
       <Services />
       <Packages />
       <Gallery />
-      <Blog />
       <FAQSection />
+      <Blog />
       <BookingForm />
       <Footer />
     </div>
