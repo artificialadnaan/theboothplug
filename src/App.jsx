@@ -4,7 +4,7 @@ import emailjs from "@emailjs/browser";
 import { BLOG_POSTS } from "./blogData.js";
 import { BlogList, BlogPostPage } from "./BlogPage.jsx";
 
-emailjs.init("YOUR_PUBLIC_KEY");
+emailjs.init("n-nzGVGDgkFiM5FMd");
 
 const BRAND = {
   name: "The Booth Plug",
