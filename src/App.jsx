@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
+import emailjs from "@emailjs/browser";
 import { BLOG_POSTS } from "./blogData.js";
 import { BlogList, BlogPostPage } from "./BlogPage.jsx";
+
+emailjs.init("YOUR_PUBLIC_KEY");
 
 const BRAND = {
   name: "The Booth Plug",
   tagline: "Your Plug for Scroll-Stopping Content",
-  phone: "(214) 555-PLUG",
+  phone: "(682) 583-4011",
   email: "book@theboothplug.com",
   ig: "@theboothplug",
 };
@@ -480,7 +483,7 @@ function FAQSection() {
 
 function BookingForm() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", date: "", eventType: "", package: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
   const inputStyle = {
     width: "100%", padding: "14px 16px", background: "rgba(255,255,255,0.04)",
@@ -489,7 +492,29 @@ function BookingForm() {
     boxSizing: "border-box",
   };
 
-  if (submitted) {
+  const handleSubmit = async () => {
+    if (!form.name || !form.email) return;
+    setStatus("sending");
+    try {
+      const templateParams = {
+        from_name: form.name,
+        from_email: form.email,
+        phone: form.phone,
+        event_date: form.date,
+        event_type: form.eventType,
+        package_selected: form.package,
+        message: form.message,
+        to_emails: "book@theboothplug.com, adnaan.iqbal@gmail.com, adnaan@fencetastic.net",
+      };
+      await emailjs.send("service_theboothplug", "template_booking", templateParams);
+      setStatus("sent");
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setStatus("error");
+    }
+  };
+
+  if (status === "sent") {
     return (
       <section id="book" style={{ padding: "100px clamp(20px,5vw,60px)", background: "#0a0a0a" }}>
         <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
@@ -541,16 +566,23 @@ function BookingForm() {
             <option>Custom / Not Sure</option>
           </select>
           <textarea placeholder="Tell us about your event..." rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} style={{ ...inputStyle, resize: "vertical" }} />
+          {status === "error" && (
+            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#ff4444", textAlign: "center" }}>
+              Something went wrong. Please try again or email us directly at book@theboothplug.com
+            </p>
+          )}
           <button
-            onClick={() => { if (form.name && form.email) setSubmitted(true); }}
+            onClick={handleSubmit}
+            disabled={status === "sending"}
             style={{
-              padding: "16px 32px", background: "#DAA520", color: "#0a0a0a",
+              padding: "16px 32px", background: status === "sending" ? "#8B6914" : "#DAA520", color: "#0a0a0a",
               fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 700,
               letterSpacing: 2, textTransform: "uppercase", border: "none",
-              borderRadius: 2, cursor: "pointer", transition: "all 0.2s",
+              borderRadius: 2, cursor: status === "sending" ? "wait" : "pointer", transition: "all 0.2s",
+              opacity: status === "sending" ? 0.7 : 1,
             }}
           >
-            Lock In My Date {"\u26A1"}
+            {status === "sending" ? "Sending..." : `Lock In My Date ${"\u26A1"}`}
           </button>
         </div>
       </div>
