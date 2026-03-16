@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import { BLOG_POSTS } from "./blogData.js";
+import { BlogList, BlogPostPage } from "./BlogPage.jsx";
 
 const BRAND = {
   name: "The Booth Plug",
@@ -70,40 +73,7 @@ const SERVICES = [
   { icon: "\u{1F680}", title: "Brand Activations", desc: "Pop-ups, product launches, and experiential marketing. Custom everything, data capture included." },
 ];
 
-const BLOG_POSTS = [
-  {
-    title: "5 Ways a Photo Booth Turns Your Wedding Into a Content Machine",
-    excerpt: "Your photographer captures the ceremony. We capture the chaos, the laughter, and the moments your guests will actually share on their feeds.",
-    date: "Mar 10, 2026",
-    slug: "wedding-content-machine",
-    category: "Weddings",
-    readTime: "4 min",
-  },
-  {
-    title: "Why DFW Event Planners Are Ditching Traditional Photo Booths",
-    excerpt: "The enclosed box with a curtain is dead. Here\u2019s what the top planners in Dallas-Fort Worth are booking instead \u2014 and why open-air DSLR is winning.",
-    date: "Mar 5, 2026",
-    slug: "dfw-ditching-traditional-booths",
-    category: "Industry",
-    readTime: "3 min",
-  },
-  {
-    title: "How to Use a Photo Booth for Corporate Lead Generation",
-    excerpt: "It\u2019s not just entertainment. The right photo booth setup can capture emails, drive social impressions, and give your brand a 10x return on event spend.",
-    date: "Feb 28, 2026",
-    slug: "corporate-lead-generation",
-    category: "Corporate",
-    readTime: "5 min",
-  },
-  {
-    title: "The Facebook Marketplace Hack for Booking More Events in DFW",
-    excerpt: "Most photo booth companies ignore Marketplace entirely. Here\u2019s how we use it to consistently book 3-5 events per month \u2014 and you can too.",
-    date: "Feb 20, 2026",
-    slug: "facebook-marketplace-hack",
-    category: "Business",
-    readTime: "6 min",
-  },
-];
+// Blog posts now imported from blogData.js
 
 const FAQ = [
   { q: "How much space does the booth need?", a: "We need about 8\u00D78 feet for the full setup \u2014 camera, lighting, and backdrop. We can work with tighter spaces if needed." },
@@ -396,6 +366,12 @@ function Gallery() {
 }
 
 function Blog() {
+  const today = new Date().toISOString().split("T")[0];
+  const published = BLOG_POSTS
+    .filter(p => p.publishDate <= today)
+    .sort((a, b) => b.publishDate.localeCompare(a.publishDate))
+    .slice(0, 4);
+
   return (
     <section id="blog" style={{ padding: "100px clamp(20px,5vw,60px)", background: "#0a0a0a" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -406,37 +382,50 @@ function Blog() {
           </h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
-          {BLOG_POSTS.map((post, i) => (
-            <article key={i} style={{
-              padding: 28, background: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4,
-              display: "flex", flexDirection: "column",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                <span style={{
-                  padding: "3px 10px", background: "rgba(218,165,32,0.1)",
-                  fontFamily: "'Space Mono', monospace", fontSize: 10, color: "#DAA520",
-                  letterSpacing: 1, textTransform: "uppercase", borderRadius: 2,
-                }}>{post.category}</span>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "#555" }}>{post.readTime} read</span>
-              </div>
-              <h3 style={{
-                fontFamily: "'Playfair Display', serif", fontSize: 20, color: "#fff",
-                lineHeight: 1.35, marginBottom: 12, flex: 1,
-              }}>{post.title}</h3>
-              <p style={{
-                fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#777",
-                lineHeight: 1.7, marginBottom: 16,
-              }}>{post.excerpt}</p>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "#555" }}>{post.date}</span>
-                <span style={{
-                  fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#DAA520",
-                  cursor: "pointer", letterSpacing: 1,
-                }}>Read {"\u2192"}</span>
-              </div>
-            </article>
+          {published.map((post) => (
+            <Link to={`/blog/${post.slug}`} key={post.id} style={{ textDecoration: "none" }}>
+              <article style={{
+                padding: 28, background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4,
+                display: "flex", flexDirection: "column", height: "100%",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                  <span style={{
+                    padding: "3px 10px", background: "rgba(218,165,32,0.1)",
+                    fontFamily: "'Space Mono', monospace", fontSize: 10, color: "#DAA520",
+                    letterSpacing: 1, textTransform: "uppercase", borderRadius: 2,
+                  }}>{post.category}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "#555" }}>{post.readTime} read</span>
+                </div>
+                <h3 style={{
+                  fontFamily: "'Playfair Display', serif", fontSize: 20, color: "#fff",
+                  lineHeight: 1.35, marginBottom: 12, flex: 1,
+                }}>{post.title}</h3>
+                <p style={{
+                  fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#777",
+                  lineHeight: 1.7, marginBottom: 16,
+                }}>{post.excerpt}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "#555" }}>
+                    {new Date(post.publishDate + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                  <span style={{
+                    fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#DAA520",
+                    letterSpacing: 1,
+                  }}>Read {"\u2192"}</span>
+                </div>
+              </article>
+            </Link>
           ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 40 }}>
+          <Link to="/blog" style={{
+            padding: "14px 32px", background: "transparent", color: "#DAA520",
+            fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700,
+            textDecoration: "none", letterSpacing: 2, textTransform: "uppercase",
+            borderRadius: 2, border: "1px solid rgba(218,165,32,0.4)",
+            display: "inline-block",
+          }}>View All Posts</Link>
         </div>
       </div>
     </section>
@@ -629,10 +618,11 @@ function Footer() {
 
 // ─── MAIN APP ────────────────────────────────────────────
 
-export default function App() {
+function HomePage() {
   const [activeSection, setActiveSection] = useState("hero");
 
   useEffect(() => {
+    document.title = "The Booth Plug | DFW Photo Booth Rental";
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
@@ -677,5 +667,15 @@ export default function App() {
       <BookingForm />
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/blog" element={<BlogList />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
+    </Routes>
   );
 }
