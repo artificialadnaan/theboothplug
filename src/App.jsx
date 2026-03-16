@@ -496,14 +496,17 @@ function BookingForm() {
     if (!form.name || !form.email) return;
     setStatus("sending");
     try {
+      const formattedDate = form.date
+        ? new Date(form.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })
+        : "Not specified";
       const templateParams = {
         from_name: form.name,
         from_email: form.email,
-        phone: form.phone,
-        event_date: form.date,
-        event_type: form.eventType,
-        package_selected: form.package,
-        message: form.message,
+        phone: form.phone || "Not provided",
+        event_date: formattedDate,
+        event_type: form.eventType || "Not specified",
+        package_selected: form.package || "Not specified",
+        message: form.message || "No additional details provided.",
         to_emails: "book@theboothplug.com, adnaan.iqbal@gmail.com, adnaan@fencetastic.net",
       };
       await emailjs.send("service_theboothplug", "template_booking", templateParams);
